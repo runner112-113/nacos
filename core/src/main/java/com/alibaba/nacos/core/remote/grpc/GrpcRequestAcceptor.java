@@ -76,10 +76,12 @@ public class GrpcRequestAcceptor extends RequestGrpc.RequestImplBase {
     public void request(Payload grpcRequest, StreamObserver<Payload> responseObserver) {
         
         traceIfNecessary(grpcRequest, true);
+        // 获取请求类型
         String type = grpcRequest.getMetadata().getType();
         long startTime = System.nanoTime();
         
         //server is on starting.
+        // 若当前节点还未启动完毕
         if (!ApplicationUtils.isStarted()) {
             Payload payloadResponse = GrpcUtils.convert(
                     ErrorResponse.build(NacosException.INVALID_SERVER_STATUS, "Server is starting,please try later."));
@@ -93,6 +95,7 @@ public class GrpcRequestAcceptor extends RequestGrpc.RequestImplBase {
         }
 
         // server check.
+        // 判断请求是否为ServerCheckRequest
         if (ServerCheckRequest.class.getSimpleName().equals(type)) {
             Payload serverCheckResponseP = GrpcUtils.convert(new ServerCheckResponse(GrpcServerConstants.CONTEXT_KEY_CONN_ID.get(), true));
             traceIfNecessary(serverCheckResponseP, false);
@@ -102,7 +105,8 @@ public class GrpcRequestAcceptor extends RequestGrpc.RequestImplBase {
                     0, null, null, System.nanoTime() - startTime);
             return;
         }
-        
+
+        // 根据请求的类型，找到对应的处理器
         RequestHandler requestHandler = requestHandlerRegistry.getByRequestType(type);
         //no handler found.
         if (requestHandler == null) {

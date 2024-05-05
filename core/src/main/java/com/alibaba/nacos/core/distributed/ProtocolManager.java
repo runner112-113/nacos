@@ -131,9 +131,11 @@ public class ProtocolManager extends MemberChangeListener implements DisposableB
     }
     
     private void injectMembers4CP(Config config) {
+        // current node
         final Member selfMember = memberManager.getSelf();
         final String self = selfMember.getIp() + ":" + Integer
                 .parseInt(String.valueOf(selfMember.getExtendVal(MemberMetaDataConstants.RAFT_PORT)));
+        // other nodes in cluster
         Set<String> others = toCPMembersInfo(memberManager.allMembers());
         config.setMembers(self, others);
     }

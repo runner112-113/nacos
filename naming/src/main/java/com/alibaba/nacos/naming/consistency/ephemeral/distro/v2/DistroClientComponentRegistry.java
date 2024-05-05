@@ -35,7 +35,8 @@ import javax.annotation.PostConstruct;
  */
 @Component
 public class DistroClientComponentRegistry {
-    
+
+    // Nacos节点管理器
     private final ServerMemberManager serverMemberManager;
     
     private final DistroProtocol distroProtocol;
@@ -43,9 +44,11 @@ public class DistroClientComponentRegistry {
     private final DistroComponentHolder componentHolder;
     
     private final DistroTaskEngineHolder taskEngineHolder;
-    
+
+    // Nacos 客户端管理器
     private final ClientManager clientManager;
-    
+
+    // 集群rpc客户端代理对象
     private final ClusterRpcClientProxy clusterRpcClientProxy;
     
     public DistroClientComponentRegistry(ServerMemberManager serverMemberManager, DistroProtocol distroProtocol,
@@ -69,9 +72,13 @@ public class DistroClientComponentRegistry {
         DistroTransportAgent transportAgent = new DistroClientTransportAgent(clusterRpcClientProxy,
                 serverMemberManager);
         DistroClientTaskFailedHandler taskFailedHandler = new DistroClientTaskFailedHandler(taskEngineHolder);
+        // 注册Nacos:Naming:v2:ClientData类型数据的数据仓库实现
         componentHolder.registerDataStorage(DistroClientDataProcessor.TYPE, dataProcessor);
+        // 注册Nacos:Naming:v2:ClientData类型的DistroData数据处理器
         componentHolder.registerDataProcessor(dataProcessor);
+        // 注册Nacos:Naming:v2:ClientData类型数据的数据传输代理对象实现
         componentHolder.registerTransportAgent(DistroClientDataProcessor.TYPE, transportAgent);
+        // 注册Nacos:Naming:v2:ClientData类型的失败任务处理器
         componentHolder.registerFailedTaskHandler(DistroClientDataProcessor.TYPE, taskFailedHandler);
     }
 }

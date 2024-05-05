@@ -101,6 +101,7 @@ public class DistroLoadDataTask implements Runnable {
             long startTime = System.currentTimeMillis();
             try {
                 Loggers.DISTRO.info("[DISTRO-INIT] load snapshot {} from {}", resourceType, each.getAddress());
+                // 获取所有nacos节点中的datum snapshot
                 DistroData distroData = transportAgent.getDatumSnapshot(each.getAddress());
                 Loggers.DISTRO.info("[DISTRO-INIT] it took {} ms to load snapshot {} from {} and snapshot size is {}.",
                         System.currentTimeMillis() - startTime, resourceType, each.getAddress(),

@@ -117,7 +117,9 @@ public class JRaftProtocol extends AbstractConsistencyProtocol<RaftConfig, Reque
     public void init(RaftConfig config) {
         if (initialized.compareAndSet(false, true)) {
             this.raftConfig = config;
+            // Changes to metadata information during the raft protocol run.
             NotifyCenter.registerToSharePublisher(RaftEvent.class);
+            // init and start raftServer
             this.raftServer.init(this.raftConfig);
             this.raftServer.start();
             

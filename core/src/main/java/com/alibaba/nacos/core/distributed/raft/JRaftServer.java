@@ -160,7 +160,9 @@ public class JRaftServer {
         String[] info = InternetAddressUtil.splitIPPortStr(self);
         selfIp = info[0];
         selfPort = Integer.parseInt(info[1]);
+        // current peer
         localPeerId = PeerId.parsePeer(self);
+        // node setting
         nodeOptions = new NodeOptions();
         
         // Set the election timeout time. The default is 5 seconds.

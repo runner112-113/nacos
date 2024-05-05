@@ -87,6 +87,8 @@ import static com.alibaba.nacos.api.exception.NacosException.CLIENT_INVALID_PARA
  * {@link ServerMemberManager#initAndStartLookup()} Initializes the addressing mode
  *
  * @author <a href="mailto:liaochuntao@live.com">liaochuntao</a>
+ *
+ * 集群成员的所有操作都汇聚于此类，初始化、成员变更、成员列表、集群间汇报等
  */
 @Component(value = "serverMemberManager")
 public class ServerMemberManager implements ApplicationListener<WebServerInitializedEvent> {

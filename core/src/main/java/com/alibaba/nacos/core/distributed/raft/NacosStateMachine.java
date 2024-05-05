@@ -102,9 +102,11 @@ class NacosStateMachine extends StateMachineAdapter {
                 Status status = Status.OK();
                 try {
                     if (iter.done() != null) {
+                        // Leader Node
                         closure = (NacosClosure) iter.done();
                         message = closure.getMessage();
                     } else {
+                        // Follower Node
                         final ByteBuffer data = iter.getData();
                         message = ProtoMessageUtil.parse(data.array());
                         if (message instanceof ReadRequest) {

@@ -99,7 +99,8 @@ public class DistroFilter implements Filter {
                 return;
             }
             String distroTag = distroTagGenerator.getResponsibleTag(req);
-            
+
+            // 属于自己负责的则放行 否则转发到处理该请求的nacos instance上
             if (distroMapper.responsible(distroTag)) {
                 filterChain.doFilter(req, resp);
                 return;
@@ -115,7 +116,8 @@ public class DistroFilter implements Filter {
                         "receive invalid redirect request from peer " + req.getRemoteAddr());
                 return;
             }
-            
+
+            // 找到处理该请求的nacos服务器
             final String targetServer = distroMapper.mapSrv(distroTag);
             
             List<String> headerList = new ArrayList<>(16);

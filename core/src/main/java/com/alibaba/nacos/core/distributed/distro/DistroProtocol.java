@@ -42,7 +42,8 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class DistroProtocol {
-    
+
+    // 服务器成员管理器
     private final ServerMemberManager memberManager;
     
     private final DistroComponentHolder distroComponentHolder;
@@ -64,7 +65,9 @@ public class DistroProtocol {
             isInitialized = true;
             return;
         }
+        // verify task
         startVerifyTask();
+        // load task
         startLoadTask();
     }
     
@@ -85,6 +88,7 @@ public class DistroProtocol {
     }
     
     private void startVerifyTask() {
+        // 延迟5秒开始，间隔5秒轮询。
         GlobalExecutor.schedulePartitionDataTimedSync(new DistroVerifyTimedTask(memberManager, distroComponentHolder,
                         distroTaskEngineHolder.getExecuteWorkersManager()),
                 DistroConfig.getInstance().getVerifyIntervalMillis());

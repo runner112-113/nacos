@@ -54,7 +54,9 @@ public class DistroVerifyTimedTask implements Runnable {
             if (Loggers.DISTRO.isDebugEnabled()) {
                 Loggers.DISTRO.debug("server list is: {}", targetServer);
             }
+            // 每一种类型的数据，都要向其他节点发起验证
             for (String each : distroComponentHolder.getDataStorageTypes()) {
+                // 对dataStorage内的数据进行验证
                 verifyForDataStorage(each, targetServer);
             }
         } catch (Exception e) {
@@ -63,16 +65,20 @@ public class DistroVerifyTimedTask implements Runnable {
     }
     
     private void verifyForDataStorage(String type, List<Member> targetServer) {
+        // 获取数据类型
         DistroDataStorage dataStorage = distroComponentHolder.findDataStorage(type);
+        // 若数据还未同步完毕则不处理
         if (!dataStorage.isFinishInitial()) {
             Loggers.DISTRO.warn("data storage {} has not finished initial step, do not send verify data",
                     dataStorage.getClass().getSimpleName());
             return;
         }
+        // 获取验证数据
         List<DistroData> verifyData = dataStorage.getVerifyData();
         if (null == verifyData || verifyData.isEmpty()) {
             return;
         }
+        // 对每个节点开启一个异步的线程来执行
         for (Member member : targetServer) {
             DistroTransportAgent agent = distroComponentHolder.findTransportAgent(type);
             if (null == agent) {
