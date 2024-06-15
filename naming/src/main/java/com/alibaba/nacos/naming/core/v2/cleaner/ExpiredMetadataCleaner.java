@@ -30,6 +30,8 @@ import java.util.concurrent.TimeUnit;
  * Expired metadata cleaner.
  *
  * @author xiweng.yy
+ *
+ * 元数据的清理
  */
 @Component
 public class ExpiredMetadataCleaner extends AbstractNamingCleaner {

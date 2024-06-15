@@ -23,6 +23,9 @@ import java.util.Map;
  *
  * @author nkorange
  * @since 0.7.0
+ *
+ * 实体是作为 CMDB 里数据的承载方，在⼀般的 CMDB 中，⼀个实体可以指⼀个 IP、应用或者服务。
+ * 而这个实体会有很多属性，例如 IP 的机房信息，服务的版本信息等。
  */
 public class Entity {
     

@@ -35,6 +35,10 @@ import java.util.List;
  * Cluster.conf file managed cluster member node addressing pattern.
  *
  * @author <a href="mailto:liaochuntao@live.com">liaochuntao</a>
+ *
+ * 文件寻址
+ * 文件寻址模式是 Nacos 集群模式下的默认寻址实现。文件寻址模式很简单，其实就是每个 Nacos
+ * 节点需要维护⼀个叫做 cluster.conf 的文件
  */
 public class FileConfigMemberLookup extends AbstractMemberLookup {
     

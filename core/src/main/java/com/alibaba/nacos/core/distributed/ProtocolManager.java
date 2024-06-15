@@ -121,6 +121,7 @@ public class ProtocolManager extends MemberChangeListener implements DisposableB
     }
     
     private void initCPProtocol() {
+        // 容器中有CPProtocol 就启动CP共识
         ApplicationUtils.getBeanIfExist(CPProtocol.class, protocol -> {
             Class configType = ClassUtils.resolveGenericType(protocol.getClass());
             Config config = (Config) ApplicationUtils.getBean(configType);

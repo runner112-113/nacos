@@ -332,7 +332,8 @@ public class InstanceControllerV2 {
             @RequestParam("ip") String ip, @RequestParam("port") Integer port) throws NacosException {
         
         String compositeServiceName = NamingUtils.getGroupedName(serviceName, groupName);
-        
+
+        // 获取指定的instance
         Instance instance = instanceServiceV2.getInstance(namespaceId, compositeServiceName, clusterName, ip, port);
         
         InstanceDetailInfoVo instanceDetailInfoVo = new InstanceDetailInfoVo();
@@ -455,7 +456,13 @@ public class InstanceControllerV2 {
         }
         return instance;
     }
-    
+
+
+    /**
+     * groupName@@serviceName
+     * @param instanceForm
+     * @return  groupName@@serviceName
+     */
     private String buildCompositeServiceName(InstanceForm instanceForm) {
         return NamingUtils.getGroupedName(instanceForm.getServiceName(), instanceForm.getGroupName());
     }

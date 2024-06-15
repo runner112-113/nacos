@@ -30,11 +30,23 @@ import java.util.concurrent.atomic.AtomicLong;
 public class Service implements Serializable {
     
     private static final long serialVersionUID = -990509089519499344L;
-    
+
+    /**
+     * Nacos 数据模型中最顶层、也是包含范围最广的概念，用于在类似环境或租户等需要强制隔离的场景中定义。
+     * Nacos 的服务也需要使用命名空间来进行隔离
+     */
     private final String namespace;
-    
+
+    /**
+     * Nacos 数据模型中次于命名空间的⼀种隔离概念，区别于命名空间的强制隔离属性，分组属于⼀个弱隔离概念，主要用于逻辑区分⼀些服务使用场景或不同应用的同名服务，
+     * 最常用的情况主要是同⼀个服务的测试分组和生产分组、或者将应用名作为分组以防止不同应用
+     * 提供的服务重名。
+     */
     private final String group;
-    
+
+    /**
+     * 该服务实际的名字，⼀般用于描述该服务提供了某种功能或能力。
+     */
     private final String name;
     
     private final boolean ephemeral;

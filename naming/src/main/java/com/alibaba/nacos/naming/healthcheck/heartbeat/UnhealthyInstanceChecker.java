@@ -41,6 +41,8 @@ import java.util.Optional;
  * <p>Mark these instances healthy status {@code false} if beat time out.
  *
  * @author xiweng.yy
+ *
+ * 健康检查
  */
 public class UnhealthyInstanceChecker implements InstanceBeatChecker {
     

@@ -23,6 +23,12 @@ import java.util.Set;
  *
  * @author nkorange
  * @since 0.7.0
+ *
+ * Label 是我们抽象出的 Entity 属性，Label 定义为⼀个描述 Entity 属性的 K-V 键值对。Label
+ * 的 key 和 value 的取值范围⼀般都是预先定义好的，当需要对 Label 进行变更，如增加新的 key
+ * 或者 value 时，需要调用单独的接口并触发相应的事件。⼀个常见的 Label 的例子是 IP 的机房信
+ * 息，我们认为机房（site）是 Label 的 key，而机房的集合（site1, site2, site3）是 Label 的
+ * value，这个 Label 的定义就是：site: {site1, site2, site3}
  */
 public class Label {
     

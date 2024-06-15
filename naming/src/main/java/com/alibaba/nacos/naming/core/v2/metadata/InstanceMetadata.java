@@ -31,14 +31,23 @@ public class InstanceMetadata implements Serializable {
     
     /**
      * instance weight.
+     * 实例级别的配置。权重为浮点数，范围为 0-10000。
+     * 权重越大，分配给该实例的流量越大
      */
     private double weight = 1.0D;
     
     /**
      * If instance is enabled to accept request.
+     * 标记该实例是否接受流量，优先级大于权重和健康状态。
+     * 用于运维人员在不变动实例本身的情况下，快速地手动将某个实例从服务中移除。
      */
     private boolean enabled = true;
-    
+
+    /**
+     * user extended attributes.
+     * 不同于实例定义中的拓展数据，这个拓展数据是给予运维人员在不变动
+     * 实例本身的情况下，快速地修改和新增实例的扩展数据，从而达到运维实例的作用。
+     */
     private Map<String, Object> extendData = new ConcurrentHashMap<>(1);
     
     public double getWeight() {

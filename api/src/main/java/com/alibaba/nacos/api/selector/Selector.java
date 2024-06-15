@@ -35,6 +35,10 @@ import java.io.Serializable;
  *
  * @author chenglu
  * @date 2021-07-09 21:24
+ *
+ *
+ * 用于在获取服务下的实例列表时，过滤和筛选实例。该选择器也被称为路由器，
+ * 目前 Nacos 支持通过将实例的部分信息存储在外部元数据管理 CMDB 中，并在发现服务时使用 CMDB 中存储的元数据标签来进行筛选的能力。
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 public interface Selector<R, C, E> extends Serializable {

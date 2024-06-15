@@ -100,9 +100,11 @@ public interface ClientOperationService {
         if (StringUtils.isNotEmpty(instance.getInstanceId())) {
             extendDatum.put(Constants.CUSTOM_INSTANCE_ID, instance.getInstanceId());
         }
+        // 权重
         if (Constants.DEFAULT_INSTANCE_WEIGHT != instance.getWeight()) {
             extendDatum.put(Constants.PUBLISH_INSTANCE_WEIGHT, instance.getWeight());
         }
+        // 是否接收请求
         if (!instance.isEnabled()) {
             extendDatum.put(Constants.PUBLISH_INSTANCE_ENABLE, instance.isEnabled());
         }

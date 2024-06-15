@@ -27,6 +27,10 @@ import java.util.Collections;
  * Member node addressing mode in stand-alone mode.
  *
  * @author <a href="mailto:liaochuntao@live.com">liaochuntao</a>
+ *
+ * 单机寻址
+ * 单机模式的寻址模式很简单，其实就是找到自己的 IP:PORT 组合信息，然后格式化为⼀个节点信息，
+ * 调用 afterLookup 然后将信息存储到 ServerMemberManager 中
  */
 public class StandaloneMemberLookup extends AbstractMemberLookup {
     

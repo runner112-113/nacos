@@ -129,6 +129,8 @@ public class IpPortBasedClient extends AbstractClient {
     
     /**
      * Init client.
+     * 临时结点开启心跳检查
+     * 持久化结点开启健康检查
      */
     public void init() {
         if (ephemeral) {

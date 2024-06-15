@@ -41,6 +41,9 @@ public class Service implements Serializable {
     
     /**
      * protect threshold.
+     * 为了防止因过多实例故障，导致所有流量全部流入剩余实例，继而造成流量压力将剩余实例被压垮形成的雪崩效应。
+     * 应将健康保护阈值定义为⼀个 0 到 1之间的浮点数。当域名健康实例数占总服务实例数的比例小于该值时，无论实例是否健康，都会
+     * 将这个实例返回给客户端。这样做虽然损失了⼀部分流量，但是保证了集群中剩余健康实例能正常工作
      */
     private float protectThreshold = 0.0F;
     

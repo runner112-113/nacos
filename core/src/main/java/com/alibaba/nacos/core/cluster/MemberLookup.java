@@ -26,6 +26,8 @@ import java.util.Map;
  * Member node addressing mode.
  *
  * @author <a href="mailto:liaochuntao@live.com">liaochuntao</a>
+ *
+ * Nacos集群Member寻址机制
  */
 public interface MemberLookup {
     
@@ -47,6 +49,9 @@ public interface MemberLookup {
      * Inject the ServerMemberManager property.
      *
      * @param memberManager {@link ServerMemberManager}
+     *
+     * 将 ServerMemberManager 注入到 MemberLookup 中，
+     * 方便利用ServerMemberManager 的存储、查询能力
      */
     void injectMemberManager(ServerMemberManager memberManager);
     
@@ -54,6 +59,9 @@ public interface MemberLookup {
      * The addressing pattern finds cluster nodes.
      *
      * @param members {@link Collection}
+     *
+     * ⼀个事件接口，当 MemberLookup 需要进行成员节点信息更新时，会将当前最新的成员节点列表信息通过该函数进行通知给
+     * ServerMemberManager，具体的节点管理方式，则是隐藏到具体的 MemberLookup 实现中。
      */
     void afterLookup(Collection<Member> members);
     

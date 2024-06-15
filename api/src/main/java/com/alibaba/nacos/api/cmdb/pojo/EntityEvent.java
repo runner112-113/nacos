@@ -21,6 +21,10 @@ package com.alibaba.nacos.api.cmdb.pojo;
  *
  * @author nkorange
  * @since 0.7.0
+ *
+ * 实体的标签的变更事件。当 CMDB 的实体属性发生变化，需要有⼀个事件机制来通知所有订阅方。
+ * 为了保证实体事件携带的变更信息是最新准确的，这个事件里只会包含变更的实体的标识以及变更
+ * 事件的类型，不会包含变更的标签的值。
  */
 public class EntityEvent {
     

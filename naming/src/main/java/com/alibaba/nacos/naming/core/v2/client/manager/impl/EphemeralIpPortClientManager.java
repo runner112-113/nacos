@@ -51,7 +51,8 @@ import java.util.concurrent.TimeUnit;
 @DependsOn("clientServiceIndexesManager")
 @Component("ephemeralIpPortClientManager")
 public class EphemeralIpPortClientManager implements ClientManager {
-    
+
+    // 临时节点的存储
     private final ConcurrentMap<String, IpPortBasedClient> clients = new ConcurrentHashMap<>();
     
     private final DistroMapper distroMapper;
@@ -114,7 +115,12 @@ public class EphemeralIpPortClientManager implements ClientManager {
     public Collection<String> allClientId() {
         return clients.keySet();
     }
-    
+
+    /**
+     * 是不是自己所管理的Client
+     * @param client client
+     * @return
+     */
     @Override
     public boolean isResponsibleClient(Client client) {
         if (client instanceof IpPortBasedClient) {

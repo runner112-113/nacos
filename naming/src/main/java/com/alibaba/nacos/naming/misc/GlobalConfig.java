@@ -50,11 +50,19 @@ public class GlobalConfig {
     public static Long getEmptyServiceExpiredTime() {
         return EnvUtil.getProperty(EMPTY_SERVICE_EXPIRED_TIME, Long.class, 60000L);
     }
-    
+
+    /**
+     * clean task execute interval
+     * @return
+     */
     public static Long getExpiredMetadataCleanInterval() {
         return EnvUtil.getProperty(EXPIRED_METADATA_CLEAN_INTERVAL, Long.class, 5000L);
     }
-    
+
+    /**
+     * 实例移除后 多久删除元数据信息
+     * @return
+     */
     public static Long getExpiredMetadataExpiredTime() {
         return EnvUtil.getProperty(EXPIRED_METADATA_EXPIRED_TIME, Long.class, 60000L);
     }

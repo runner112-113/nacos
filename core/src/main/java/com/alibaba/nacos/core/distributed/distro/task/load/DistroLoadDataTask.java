@@ -60,6 +60,7 @@ public class DistroLoadDataTask implements Runnable {
     @Override
     public void run() {
         try {
+            // 是轮询所有的Distro节点，通过向其他的机器发送请求拉取全量数据
             load();
             if (!checkCompleted()) {
                 GlobalExecutor.submitLoadDataTask(this, distroConfig.getLoadDataRetryDelayMillis());
