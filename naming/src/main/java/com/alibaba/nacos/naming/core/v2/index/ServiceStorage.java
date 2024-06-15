@@ -55,9 +55,11 @@ public class ServiceStorage {
     private final SwitchDomain switchDomain;
     
     private final NamingMetadataManager metadataManager;
-    
+
+    // Service ---> ServiceInfo
     private final ConcurrentMap<Service, ServiceInfo> serviceDataIndexes;
-    
+
+    // Service ---> Set<>(clusterName)
     private final ConcurrentMap<Service, Set<String>> serviceClusterIndex;
     
     public ServiceStorage(ClientServiceIndexesManager serviceIndexesManager, ClientManagerDelegate clientManager,

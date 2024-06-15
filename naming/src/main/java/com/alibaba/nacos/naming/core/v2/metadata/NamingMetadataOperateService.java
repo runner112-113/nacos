@@ -69,6 +69,7 @@ public class NamingMetadataOperateService {
      */
     public void deleteServiceMetadata(Service service) {
         MetadataOperation<ServiceMetadata> operation = buildMetadataOperation(service);
+        // 根据group来区分不同的 RequestProcessor4CP
         WriteRequest operationLog = WriteRequest.newBuilder().setGroup(Constants.SERVICE_METADATA)
                 .setOperation(DataOperation.DELETE.name()).setData(ByteString.copyFrom(serializer.serialize(operation)))
                 .build();
