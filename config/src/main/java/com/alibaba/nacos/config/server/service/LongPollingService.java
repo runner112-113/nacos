@@ -190,6 +190,7 @@ public class LongPollingService {
         }
         
         // Must be called by http thread, or send response.
+        // 转换成异步servlet
         final AsyncContext asyncContext = req.startAsync();
         // AsyncContext.setTimeout() is incorrect, Control by oneself
         asyncContext.setTimeout(0L);

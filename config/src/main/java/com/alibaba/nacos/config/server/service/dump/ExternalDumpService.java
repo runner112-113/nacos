@@ -35,6 +35,8 @@ import javax.annotation.PostConstruct;
  * External dump service.
  *
  * @author <a href="mailto:liaochuntao@live.com">liaochuntao</a>
+ *
+ * 外部存储(mysql)
  */
 @Conditional(ConditionOnExternalStorage.class)
 @Component

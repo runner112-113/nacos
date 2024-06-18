@@ -49,6 +49,8 @@ import java.util.concurrent.atomic.AtomicReference;
  * Embedded dump service.
  *
  * @author <a href="mailto:liaochuntao@live.com">liaochuntao</a>
+ *
+ * 本地存储，基于derby数据库（与jvm共用内存，内嵌式数据库）
  */
 @Conditional(ConditionOnEmbeddedStorage.class)
 @Component

@@ -108,7 +108,10 @@ public class CacheData {
     public final String group;
     
     public final String tenant;
-    
+
+    /**
+     * 对应的监听器
+     */
     private final CopyOnWriteArrayList<ManagerListenerWrap> listeners;
     
     private volatile String md5;
@@ -122,7 +125,10 @@ public class CacheData {
      * last modify time.
      */
     private volatile long localConfigLastModified;
-    
+
+    /**
+     * 缓存在内存的配置信息
+     */
     private volatile String content;
     
     private volatile String encryptedDataKey;
@@ -443,6 +449,7 @@ public class CacheData {
                         Map<String, ConfigChangeItem> data = ConfigChangeHandler.getInstance()
                                 .parseChangeData(listenerWrap.lastContent, contentTmp, type);
                         ConfigChangeEvent event = new ConfigChangeEvent(data);
+                        // 发出ConfigChangeEvent 事件
                         ((AbstractConfigChangeListener) listener).receiveConfigChange(event);
                         listenerWrap.lastContent = contentTmp;
                     }
@@ -514,7 +521,8 @@ public class CacheData {
     }
     
     /**
-     * 1.first add listener.default is false;need to check. 2.receive config change notify,set false;need to check.
+     * 1.first add listener.default is false;need to check.
+     * 2.receive config change notify,set false;need to check.
      * 3.last listener is remove,set to false;need to check
      *
      * @return

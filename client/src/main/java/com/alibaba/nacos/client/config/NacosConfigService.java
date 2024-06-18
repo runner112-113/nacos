@@ -107,6 +107,7 @@ public class NacosConfigService implements ConfigService {
                 .queryConfig(dataId, group, worker.getAgent().getTenant(), timeoutMs, false);
         String content = configResponse.getContent();
         String encryptedDataKey = configResponse.getEncryptedDataKey();
+        // 添加监听
         worker.addTenantListenersWithContent(dataId, group, content, encryptedDataKey,
                 Collections.singletonList(listener));
         
@@ -171,6 +172,7 @@ public class NacosConfigService implements ConfigService {
         // but is maintained by user.
         // This is designed for certain scenario like client emergency reboot,
         // changing config needed in the same time, while nacos server is down.
+        // 从FailoverFile应急文件获取  考虑在nacos服务端不可用且客户端需要重启的情形
         String content = LocalConfigInfoProcessor.getFailover(worker.getAgentName(), dataId, group, tenant);
         if (content != null) {
             LOGGER.warn("[{}] [get-config] get failover ok, dataId={}, group={}, tenant={}, config={}",
@@ -183,7 +185,8 @@ public class NacosConfigService implements ConfigService {
             content = cr.getContent();
             return content;
         }
-        
+
+        // 从Nacos服务器获取
         try {
             ConfigResponse response = worker.getServerConfig(dataId, group, tenant, timeoutMs, false);
             cr.setContent(response.getContent());
@@ -200,6 +203,7 @@ public class NacosConfigService implements ConfigService {
                     worker.getAgentName(), dataId, group, tenant, ioe.toString());
         }
 
+        // 从快照文件获取 上一次从服务端获取到的数据
         content = LocalConfigInfoProcessor.getSnapshot(worker.getAgentName(), dataId, group, tenant);
         if (content != null) {
             LOGGER.warn("[{}] [get-config] get snapshot ok, dataId={}, group={}, tenant={}, config={}",

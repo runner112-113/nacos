@@ -115,6 +115,7 @@ public class ConfigQueryRequestHandler extends RequestHandler<ConfigQueryRequest
                             md5 = cacheItem.getTagMd5(autoTag, acceptCharset);
                             lastModified = cacheItem.getTagLastModified(autoTag);
                             encryptedDataKey = cacheItem.getTagEncryptedDataKey(autoTag);
+                            // 从文件中获取配置的内容
                             content = ConfigDiskServiceFactory.getInstance()
                                     .getTagContent(dataId, group, tenant, autoTag);
                             pullEvent = ConfigTraceService.PULL_EVENT_TAG + "-" + autoTag;

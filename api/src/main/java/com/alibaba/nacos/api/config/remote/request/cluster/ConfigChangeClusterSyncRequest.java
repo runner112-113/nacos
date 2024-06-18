@@ -23,6 +23,8 @@ import com.alibaba.nacos.api.config.remote.request.AbstractConfigRequest;
  *
  * @author liuzunfei
  * @version $Id: ConfigChangeClusterSyncRequest.java, v 0.1 2020年08月11日 4:30 PM liuzunfei Exp $
+ *
+ * 集群间数据同步
  */
 public class ConfigChangeClusterSyncRequest extends AbstractConfigRequest {
     

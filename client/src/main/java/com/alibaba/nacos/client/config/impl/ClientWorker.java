@@ -471,11 +471,11 @@ public class ClientWorker implements Closeable {
         }
         return this.agent.queryConfig(dataId, group, tenant, readTimeout, notify);
     }
-    
+
     private String blank2defaultGroup(String group) {
         return StringUtils.isBlank(group) ? Constants.DEFAULT_GROUP : group.trim();
     }
-    
+
     @SuppressWarnings("PMD.ThreadPoolCreationRule")
     public ClientWorker(final ConfigFilterChainManager configFilterChainManager, ServerListManager serverListManager,
             final NacosClientProperties properties) throws NacosException {
@@ -672,6 +672,7 @@ public class ClientWorker implements Closeable {
             CacheData cacheData = cacheMap.get().get(groupKey);
             if (cacheData != null) {
                 synchronized (cacheData) {
+                    // 标记为接收到配置变化
                     cacheData.getReceiveNotifyChanged().set(true);
                     cacheData.setConsistentWithServer(false);
                     notifyListenConfig();
@@ -804,9 +805,10 @@ public class ClientWorker implements Closeable {
         @Override
         public void executeConfigListen() throws NacosException {
             
-            Map<String, List<CacheData>> listenCachesMap = new HashMap<>(16);
-            Map<String, List<CacheData>> removeListenCachesMap = new HashMap<>(16);
+            Map<String /*taskId*/, List<CacheData>> listenCachesMap = new HashMap<>(16);
+            Map<String /*taskId*/, List<CacheData>> removeListenCachesMap = new HashMap<>(16);
             long now = System.currentTimeMillis();
+            // 3分钟需要全量同步一次
             boolean needAllSync = now - lastAllSyncTime >= ALL_SYNC_INTERNAL;
             for (CacheData cache : cacheMap.get().values()) {
                 
@@ -823,6 +825,7 @@ public class ClientWorker implements Closeable {
                     }
                     
                     // If local configuration information is used, then skip the processing directly.
+                    // 直接使用cache的数据 大多数是FailoverFile存在的情形
                     if (cache.isUseLocalConfigInfo()) {
                         continue;
                     }
@@ -841,9 +844,11 @@ public class ClientWorker implements Closeable {
             }
             
             //execute check listen ,return true if has change keys.
+            // 配置变化监听
             boolean hasChangedKeys = checkListenCache(listenCachesMap);
             
             //execute check remove listen.
+            // 移除去除的监听
             checkRemoveListenCache(removeListenCachesMap);
             
             if (needAllSync) {
@@ -851,6 +856,7 @@ public class ClientWorker implements Closeable {
             }
             //If has changed keys,notify re sync md5.
             if (hasChangedKeys) {
+                // poll 立即触发
                 notifyListenConfig();
             }
             
@@ -869,6 +875,7 @@ public class ClientWorker implements Closeable {
             final String envName = cacheData.envName;
             
             // Check if a failover file exists for the specified dataId, group, and tenant.
+            // 查看FailoverFile是否存在
             File file = LocalConfigInfoProcessor.getFailoverFile(envName, dataId, group, tenant);
             
             // If not using local config info and a failover file exists, load and use it.
@@ -927,10 +934,11 @@ public class ClientWorker implements Closeable {
         
         private void refreshContentAndCheck(RpcClient rpcClient, CacheData cacheData, boolean notify) {
             try {
-                
+                // 去获取最新的配置信息
                 ConfigResponse response = this.queryConfigInner(rpcClient, cacheData.dataId, cacheData.group,
                         cacheData.tenant, 3000L, notify);
                 cacheData.setEncryptedDataKey(response.getEncryptedDataKey());
+                // 重置MD5
                 cacheData.setContent(response.getContent());
                 if (null != response.getConfigType()) {
                     cacheData.setType(response.getConfigType());
@@ -940,6 +948,7 @@ public class ClientWorker implements Closeable {
                             agent.getName(), cacheData.dataId, cacheData.group, cacheData.tenant, cacheData.getMd5(),
                             ContentUtils.truncateContent(response.getContent()), response.getConfigType());
                 }
+                // 触发监听器
                 cacheData.checkListenerMd5();
             } catch (Exception e) {
                 LOGGER.error("refresh content and check md5 fail ,dataId={},group={},tenant={} ", cacheData.dataId,
@@ -1015,6 +1024,7 @@ public class ClientWorker implements Closeable {
                         ConfigBatchListenRequest configChangeListenRequest = buildConfigRequest(listenCaches);
                         configChangeListenRequest.setListen(true);
                         try {
+                            // 批量注册监听
                             ConfigChangeBatchListenResponse listenResponse = (ConfigChangeBatchListenResponse) requestProxy(
                                     rpcClient, configChangeListenRequest);
                             if (listenResponse != null && listenResponse.isSuccess()) {
@@ -1164,6 +1174,7 @@ public class ClientWorker implements Closeable {
             
             ConfigResponse configResponse = new ConfigResponse();
             if (response.isSuccess()) {
+                // 保存本地快照
                 LocalConfigInfoProcessor.saveSnapshot(this.getName(), dataId, group, tenant, response.getContent());
                 configResponse.setContent(response.getContent());
                 String configType;

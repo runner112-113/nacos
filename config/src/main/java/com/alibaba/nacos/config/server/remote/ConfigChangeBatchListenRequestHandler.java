@@ -46,7 +46,14 @@ public class ConfigChangeBatchListenRequestHandler
     
     @Autowired
     private ConfigChangeListenContext configChangeListenContext;
-    
+
+    /**
+     * 注册监听
+     * @param configChangeListenRequest request
+     * @param meta    request meta data
+     * @return
+     * @throws NacosException
+     */
     @Override
     @TpsControl(pointName = "ConfigListen")
     @Secured(action = ActionTypes.READ, signType = SignType.CONFIG)
@@ -66,13 +73,17 @@ public class ConfigChangeBatchListenRequestHandler
             String md5 = StringPool.get(listenContext.getMd5());
             
             if (configChangeListenRequest.isListen()) {
+                // groupKeyContext：groupKey ---> connectionId
+                // connectionIdContext：connectionId ---> <groupKey, md5>
                 configChangeListenContext.addListen(groupKey, md5, connectionId);
+                // 用 CacheItem 元素 md5 值与客户端值作对比，若不一致，会返回当前的 dataId 数据
                 boolean isUptoDate = ConfigCacheService.isUptodate(groupKey, md5, meta.getClientIp(), tag);
                 if (!isUptoDate) {
                     configChangeBatchListenResponse.addChangeConfig(listenContext.getDataId(), listenContext.getGroup(),
                             listenContext.getTenant());
                 }
             } else {
+                // 移除 groupKeyContext、connectionIdContext 集合元素
                 configChangeListenContext.removeListen(groupKey, connectionId);
             }
         }

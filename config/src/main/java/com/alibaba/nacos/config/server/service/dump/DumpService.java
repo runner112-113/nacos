@@ -67,6 +67,8 @@ import static com.alibaba.nacos.config.server.utils.LogUtil.FATAL_LOG;
  * Dump data service.
  *
  * @author Nacos
+ *
+ * Nacos Config模块有一个特点，会将数据库中的配置信息，dump成文件，通过直接文件读取的方式，替代直接读取数据库，降低数据库的压力，这样数据库可以更好的处理写操作
  */
 @SuppressWarnings("PMD.AbstractClassShouldStartWithAbstractNamingRule")
 public abstract class DumpService {
@@ -369,12 +371,15 @@ public abstract class DumpService {
      * @param dumpRequest dumpRequest.
      */
     public void dump(DumpRequest dumpRequest) {
+        // beta 发布
         if (dumpRequest.isBeta()) {
             dumpBeta(dumpRequest.getDataId(), dumpRequest.getGroup(), dumpRequest.getTenant(),
                     dumpRequest.getLastModifiedTs(), dumpRequest.getSourceIp());
+            // 批量发布
         } else if (dumpRequest.isBatch()) {
             dumpBatch(dumpRequest.getDataId(), dumpRequest.getGroup(), dumpRequest.getTenant(),
                     dumpRequest.getLastModifiedTs(), dumpRequest.getSourceIp());
+            // 包含tag
         } else if (StringUtils.isNotBlank(dumpRequest.getTag())) {
             dumpTag(dumpRequest.getDataId(), dumpRequest.getGroup(), dumpRequest.getTenant(), dumpRequest.getTag(),
                     dumpRequest.getLastModifiedTs(), dumpRequest.getSourceIp());

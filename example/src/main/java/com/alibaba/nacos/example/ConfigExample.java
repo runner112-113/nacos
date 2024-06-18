@@ -59,8 +59,8 @@ public class ConfigExample {
         content = configService.getConfig(dataId, group, 5000);
         System.out.println("[config content]: " + content);
 
-        boolean isRemoveOk = configService.removeConfig(dataId, group);
         System.out.println("[delete result]: " + isRemoveOk);
+        boolean isRemoveOk = configService.removeConfig(dataId, group);
         Thread.sleep(3000);
 
         content = configService.getConfig(dataId, group, 5000);

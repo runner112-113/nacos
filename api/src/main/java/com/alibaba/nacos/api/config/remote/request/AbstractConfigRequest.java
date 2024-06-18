@@ -26,11 +26,20 @@ import com.alibaba.nacos.api.remote.request.Request;
  * @version $Id: ConfigCommonRequest.java, v 0.1 2020年07月13日 9:05 PM liuzunfei Exp $
  */
 public abstract class AbstractConfigRequest extends Request {
-    
+
+    /**
+     * 配置 ID
+     */
     private String dataId;
-    
+
+    /**
+     * 配置分组
+     */
     private String group;
-    
+
+    /**
+     * 租户信息，对应 Nacos 的命名空间ID字段
+     */
     private String tenant;
     
     public String getDataId() {

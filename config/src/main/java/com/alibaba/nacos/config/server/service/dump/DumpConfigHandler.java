@@ -107,6 +107,7 @@ public class DumpConfigHandler extends Subscriber<ConfigDumpEvent> {
         }
         
         boolean result;
+        // 不是删除操作
         if (!event.isRemove()) {
             result = ConfigCacheService.dump(dataId, group, namespaceId, content, lastModified, event.getType(),
                     event.getEncryptedDataKey());
@@ -116,6 +117,7 @@ public class DumpConfigHandler extends Subscriber<ConfigDumpEvent> {
                         ConfigTraceService.DUMP_TYPE_OK, System.currentTimeMillis() - lastModified, content.length());
             }
         } else {
+            // 是删除操作
             result = ConfigCacheService.remove(dataId, group, namespaceId);
             
             if (result) {

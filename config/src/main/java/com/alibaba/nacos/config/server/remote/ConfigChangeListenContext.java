@@ -54,8 +54,10 @@ public class ConfigChangeListenContext {
      */
     public synchronized void addListen(String groupKey, String md5, String connectionId) {
         // 1.add groupKeyContext
+        // 一个 groupKey 对应多个 connectionId，原因：一个配置文件可能会在多个客户端中同时去使用
         groupKeyContext.computeIfAbsent(groupKey, k -> new HashSet<>()).add(connectionId);
         // 2.add connectionIdContext
+        // 一个 connectionId 对应多个 groupKey，原因：一个客户端不仅仅是只会使用一个配置文件
         connectionIdContext.computeIfAbsent(connectionId, k -> new HashMap<>(16)).put(groupKey, md5);
     }
     

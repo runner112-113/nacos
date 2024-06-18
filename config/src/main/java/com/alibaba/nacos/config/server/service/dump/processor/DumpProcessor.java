@@ -97,8 +97,10 @@ public class DumpProcessor implements NacosTaskProcessor {
             build.lastModifiedTs(Objects.isNull(cf) ? lastModifiedOut : cf.getLastModified());
             return DumpConfigHandler.configDump(build.build());
         }
-        
+
+        // 从db中获取
         ConfigInfoWrapper cf = configInfoPersistService.findConfigInfo(dataId, group, tenant);
+        // 查不到就是remove操作
         build.remove(Objects.isNull(cf));
         build.content(Objects.isNull(cf) ? null : cf.getContent());
         build.type(Objects.isNull(cf) ? null : cf.getType());

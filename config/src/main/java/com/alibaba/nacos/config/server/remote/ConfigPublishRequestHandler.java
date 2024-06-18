@@ -114,6 +114,7 @@ public class ConfigPublishRequestHandler extends RequestHandler<ConfigPublishReq
             String betaIps = request.getAdditionParam("betaIps");
             ConfigOperateResult configOperateResult = null;
             String persistEvent = ConfigTraceService.PERSISTENCE_EVENT;
+            // 正式发布
             if (StringUtils.isBlank(betaIps)) {
                 if (StringUtils.isBlank(tag)) {
                     if (StringUtils.isNotBlank(request.getCasMd5())) {

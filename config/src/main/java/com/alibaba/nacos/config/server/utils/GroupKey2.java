@@ -32,7 +32,14 @@ public class GroupKey2 {
         urlEncode(group, sb);
         return sb.toString();
     }
-    
+
+    /**
+     * dataId + group + tenant
+     * @param dataId
+     * @param group
+     * @param tenant
+     * @return
+     */
     public static String getKey(String dataId, String group, String tenant) {
         StringBuilder sb = new StringBuilder();
         urlEncode(dataId, sb);
@@ -94,7 +101,8 @@ public class GroupKey2 {
     }
     
     /**
-     * + -> %2B % -> %25.
+     * + -> %2B
+     * % -> %25.
      */
     static void urlEncode(String str, StringBuilder sb) {
         for (int idx = 0; idx < str.length(); ++idx) {

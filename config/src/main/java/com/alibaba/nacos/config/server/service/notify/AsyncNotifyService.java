@@ -107,12 +107,14 @@ public class AsyncNotifyService {
             String tenant = evt.tenant;
             String tag = evt.tag;
             MetricsMonitor.incrementConfigChangeCount(tenant, group, dataId);
-            
+
+            // 集群其他成员
             Collection<Member> ipList = memberManager.allMembersWithoutSelf();
             
             // In fact, any type of queue here can be
             Queue<NotifySingleRpcTask> rpcQueue = new LinkedList<>();
-            
+
+            // 广播到集群的其他每台机器
             for (Member member : ipList) {
                 // grpc report data change only
                 rpcQueue.add(
@@ -143,6 +145,7 @@ public class AsyncNotifyService {
             Member member = task.member;
             
             String event = getNotifyEvent(task);
+            // 确保member在当前集群中
             if (memberManager.hasMember(member.getAddress())) {
                 // start the health check and there are ips that are not monitored, put them directly in the notification queue, otherwise notify
                 boolean unHealthNeedDelay = isUnHealthy(member.getAddress());

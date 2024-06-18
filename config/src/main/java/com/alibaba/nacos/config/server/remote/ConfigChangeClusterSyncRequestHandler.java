@@ -56,6 +56,7 @@ public class ConfigChangeClusterSyncRequestHandler
         dumpRequest.setBeta(configChangeSyncRequest.isBeta());
         dumpRequest.setBatch(configChangeSyncRequest.isBatch());
         dumpRequest.setTag(configChangeSyncRequest.getTag());
+        // dump
         dumpService.dump(dumpRequest);
         return new ConfigChangeClusterSyncResponse();
     }
