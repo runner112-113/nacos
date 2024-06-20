@@ -238,6 +238,7 @@ public class LongPollingService {
         NotifyCenter.registerToPublisher(LocalDataChangeEvent.class, NotifyCenter.ringBufferSize);
         
         // Register A Subscriber to subscribe LocalDataChangeEvent.
+        // 注册监听 LocalDataChangeEvent
         NotifyCenter.registerSubscriber(new Subscriber() {
             
             @Override
@@ -271,6 +272,7 @@ public class LongPollingService {
         @Override
         public void run() {
             try {
+                // 遍历所有的allSubs 即长轮询对象
                 for (Iterator<ClientLongPolling> iter = allSubs.iterator(); iter.hasNext(); ) {
                     ClientLongPolling clientSub = iter.next();
                     if (clientSub.clientMd5Map.containsKey(groupKey)) {
@@ -286,6 +288,7 @@ public class LongPollingService {
                                 "in-advance",
                                 RequestUtil.getRemoteIp((HttpServletRequest) clientSub.asyncContext.getRequest()),
                                 "polling", clientSub.clientMd5Map.size(), clientSub.probeRequestSize, groupKey);
+                        // 返回客户端
                         clientSub.sendResponse(Collections.singletonList(groupKey));
                     }
                 }
@@ -352,7 +355,8 @@ public class LongPollingService {
                 }
                 
             }, timeoutTime, TimeUnit.MILLISECONDS);
-            
+
+            // 添加到allSubs中
             allSubs.add(this);
         }
         
@@ -384,6 +388,7 @@ public class LongPollingService {
                 response.setHeader("Cache-Control", "no-cache,no-store");
                 response.setStatus(HttpServletResponse.SC_OK);
                 response.getWriter().println(respString);
+                // 完成异步请求
                 asyncContext.complete();
             } catch (Exception ex) {
                 PULL_LOG.error(ex.toString(), ex);

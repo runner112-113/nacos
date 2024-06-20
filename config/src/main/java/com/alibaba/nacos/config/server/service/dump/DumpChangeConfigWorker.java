@@ -103,7 +103,8 @@ public class DumpChangeConfigWorker implements Runnable {
             
             LogUtil.DEFAULT_LOG.info("Check changeConfig start");
             long startChangeConfigTime = System.currentTimeMillis();
-            
+
+            // 增量同步
             long changeCursorId = 0L;
             while (true) {
                 LogUtil.DEFAULT_LOG.info("Check changed configs from  time {},lastMaxId={}", startTime, changeCursorId);
@@ -122,6 +123,7 @@ public class DumpChangeConfigWorker implements Runnable {
                                 cf.getGroup(), cf.getTenant());
                         LogUtil.DUMP_LOG.info("[dump-change] find change config  {}, {}, md5={}",
                                 new Object[] {groupKey, cf.getLastModified(), cf.getMd5()});
+                        // 更新
                         ConfigCacheService.dump(configInfoWrapper.getDataId(), configInfoWrapper.getGroup(),
                                 configInfoWrapper.getTenant(), configInfoWrapper.getContent(),
                                 configInfoWrapper.getLastModified(), configInfoWrapper.getType(),

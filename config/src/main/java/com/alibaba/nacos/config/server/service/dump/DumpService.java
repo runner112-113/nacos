@@ -297,20 +297,24 @@ public abstract class DumpService {
                         "Nacos Server did not start because dumpservice bean construction failure :\n" + e.getMessage(),
                         e);
             }
+            // 集群模式
             if (!EnvUtil.getStandaloneMode()) {
                 
                 Random random = new Random();
                 long initialDelay = random.nextInt(INITIAL_DELAY_IN_MINUTE) + 10;
                 LogUtil.DEFAULT_LOG.warn("initialDelay:{}", initialDelay);
-                
+
+                // 每6h全量dump一次
                 ConfigExecutor.scheduleConfigTask(new DumpAllProcessorRunner(), initialDelay,
                         DUMP_ALL_INTERVAL_IN_MINUTE, TimeUnit.MINUTES);
-                
+                // 每6h dump一次beta
                 ConfigExecutor.scheduleConfigTask(new DumpAllBetaProcessorRunner(), initialDelay,
                         DUMP_ALL_INTERVAL_IN_MINUTE, TimeUnit.MINUTES);
-                
+                // 每6h dump一次all tag
                 ConfigExecutor.scheduleConfigTask(new DumpAllTagProcessorRunner(), initialDelay,
                         DUMP_ALL_INTERVAL_IN_MINUTE, TimeUnit.MINUTES);
+
+                // 增量对账
                 ConfigExecutor.scheduleConfigChangeTask(
                         new DumpChangeConfigWorker(this.configInfoPersistService, this.historyConfigInfoPersistService,
                                 currentTime), random.nextInt((int) PropertyUtil.getDumpChangeWorkerInterval()),
