@@ -246,6 +246,8 @@ public class ConnectionManager {
         
         initConnectionEjector();
         // Start UnHealthy Connection Expel Task.
+        // 每隔 3 s 执行一次。其中便会检查 Connection#lastActiveTime属性。
+        // 把其中刷新超时的跳出来，尝试请求一下，如果请求报错，就说明这个连接无用了，于是给剔除掉
         RpcScheduledExecutor.COMMON_SERVER_EXECUTOR.scheduleWithFixedDelay(() -> {
             runtimeConnectionEjector.doEject();
             MetricsMonitor.getLongConnectionMonitor().set(connections.size());

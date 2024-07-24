@@ -218,6 +218,7 @@ public final class ServiceUtil {
                             if (!i.isHealthy()) {
                                 i = InstanceUtil.deepCopy(i);
                                 // set all to `healthy` state to protect
+                                // 把所有的都设置为health 从而达到保护
                                 i.setHealthy(true);
                             } // else deepcopy is unnecessary
                             return i;

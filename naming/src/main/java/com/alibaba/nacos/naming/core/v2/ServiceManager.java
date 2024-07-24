@@ -37,7 +37,7 @@ public class ServiceManager {
     
     private final ConcurrentHashMap<Service, Service> singletonRepository;
     
-    private final ConcurrentHashMap<String, Set<Service>> namespaceSingletonMaps;
+    private final ConcurrentHashMap<String/*namespace*/, Set<Service>> namespaceSingletonMaps;
     
     private ServiceManager() {
         singletonRepository = new ConcurrentHashMap<>(1 << 10);

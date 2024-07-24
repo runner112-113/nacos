@@ -118,6 +118,7 @@ public class PersistentClientOperationServiceImpl extends RequestProcessor4CP im
                 .build();
         
         try {
+            // 一致性协议写入
             protocol.write(writeRequest);
             Loggers.RAFT.info("Client registered. service={}, clientId={}, instance={}", service, clientId, instance);
         } catch (Exception e) {

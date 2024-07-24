@@ -87,6 +87,7 @@ public class NacosRuntimeConnectionEjector extends RuntimeConnectionEjector {
                 final CountDownLatch latch = new CountDownLatch(outDatedConnections.size());
                 for (String outDateConnectionId : outDatedConnections) {
                     try {
+                        // 尝试请求一下
                         Connection connection = connectionManager.getConnection(outDateConnectionId);
                         if (connection != null) {
                             ClientDetectionRequest clientDetectionRequest = new ClientDetectionRequest();
@@ -106,6 +107,7 @@ public class NacosRuntimeConnectionEjector extends RuntimeConnectionEjector {
                                     latch.countDown();
                                     if (response != null && response.isSuccess()) {
                                         connection.freshActiveTime();
+                                        // 成功则记录
                                         successConnections.add(outDateConnectionId);
                                     }
                                 }
@@ -134,6 +136,7 @@ public class NacosRuntimeConnectionEjector extends RuntimeConnectionEjector {
                 Loggers.CONNECTION.info("Out dated connection check successCount={}", successConnections.size());
                 
                 for (String outDateConnectionId : outDatedConnections) {
+                    // 没有成功的则剔除
                     if (!successConnections.contains(outDateConnectionId)) {
                         Loggers.CONNECTION.info("[{}]Unregister Out dated connection....", outDateConnectionId);
                         connectionManager.unregister(outDateConnectionId);

@@ -100,9 +100,11 @@ public class NacosNamingService implements NamingService {
         initLogName(nacosClientProperties);
         
         this.notifierEventScope = UUID.randomUUID().toString();
+        // 构建InstancesChangeNotifier 并注册和订阅InstancesChangeEvent到NotifyCenter
         this.changeNotifier = new InstancesChangeNotifier(this.notifierEventScope);
         NotifyCenter.registerToPublisher(InstancesChangeEvent.class, 16384);
         NotifyCenter.registerSubscriber(changeNotifier);
+        // 构建ServiceInfoHolder
         this.serviceInfoHolder = new ServiceInfoHolder(namespace, this.notifierEventScope, nacosClientProperties);
         this.clientProxy = new NamingClientProxyDelegate(this.namespace, serviceInfoHolder, nacosClientProperties,
                 changeNotifier);
@@ -325,8 +327,10 @@ public class NacosNamingService implements NamingService {
             boolean subscribe) throws NacosException {
         ServiceInfo serviceInfo;
         if (subscribe) {
+            // 缓存获取
             serviceInfo = serviceInfoHolder.getServiceInfo(serviceName, groupName, clusterString);
             if (null == serviceInfo || !clientProxy.isSubscribed(serviceName, groupName, clusterString)) {
+                // 订阅
                 serviceInfo = clientProxy.subscribe(serviceName, groupName, clusterString);
             }
         } else {
@@ -339,6 +343,7 @@ public class NacosNamingService implements NamingService {
             throws NacosException {
         ServiceInfo serviceInfo;
         String clusterString = StringUtils.join(clusters, ",");
+        // 如果故障转移是开启的
         if (serviceInfoHolder.isFailoverSwitch()) {
             serviceInfo = getServiceInfoByFailover(serviceName, groupName, clusterString);
             if (serviceInfo != null && serviceInfo.getHosts().size() > 0) {

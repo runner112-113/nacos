@@ -53,7 +53,7 @@ import java.util.concurrent.TimeUnit;
 public class EphemeralIpPortClientManager implements ClientManager {
 
     // 临时节点的存储
-    private final ConcurrentMap<String, IpPortBasedClient> clients = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String/*clientId*/, IpPortBasedClient> clients = new ConcurrentHashMap<>();
     
     private final DistroMapper distroMapper;
     

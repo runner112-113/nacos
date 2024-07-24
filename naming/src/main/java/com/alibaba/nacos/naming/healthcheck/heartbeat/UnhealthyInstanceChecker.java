@@ -59,10 +59,13 @@ public class UnhealthyInstanceChecker implements InstanceBeatChecker {
     }
     
     private long getTimeout(Service service, InstancePublishInfo instance) {
+        // 先从Metadata中获取
         Optional<Object> timeout = getTimeoutFromMetadata(service, instance);
         if (!timeout.isPresent()) {
+            // 其次在Instance的ExtendDatum中获取
             timeout = Optional.ofNullable(instance.getExtendDatum().get(PreservedMetadataKeys.HEART_BEAT_TIMEOUT));
         }
+        // 默认15秒
         return timeout.map(ConvertUtils::toLong).orElse(Constants.DEFAULT_HEART_BEAT_TIMEOUT);
     }
     

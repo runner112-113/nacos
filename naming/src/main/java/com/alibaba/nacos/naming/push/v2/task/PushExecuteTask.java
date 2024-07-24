@@ -58,12 +58,14 @@ public class PushExecuteTask extends AbstractExecuteTask {
         try {
             PushDataWrapper wrapper = generatePushData();
             ClientManager clientManager = delayTaskEngine.getClientManager();
+            // 拿到Service对应的所哟客户端clientId遍历
             for (String each : getTargetClientIds()) {
                 Client client = clientManager.getClient(each);
                 if (null == client) {
                     // means this client has disconnect
                     continue;
                 }
+                // 获取到当前Client订阅service的Subscriber
                 Subscriber subscriber = client.getSubscriber(service);
                 // skip if null
                 if (subscriber == null) {

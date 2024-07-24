@@ -29,6 +29,11 @@ import com.alibaba.nacos.common.task.AbstractExecuteTask;
  * Redo task.
  *
  * @author xiweng.yy
+ *
+ * 所谓的Redo操作，其实就是一个补偿机制，本质是个定时任务，默认每3s执行一次
+ * 这个定时任务作用是，当客户端与服务端重新建立连接时（因为一些异常原因导致连接断开）
+ * 那么之前注册的服务实例肯定还要继续注册服务端（断开连接服务实例就会被剔除服务注册表）
+ * 所以这个Redo操作一个很重要的作用就是重连之后的重新注册的作用
  */
 public class RedoScheduledTask extends AbstractExecuteTask {
     

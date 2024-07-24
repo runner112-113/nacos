@@ -209,6 +209,7 @@ public class ServiceOperatorV2Impl implements ServiceOperator {
     @Override
     @SuppressWarnings("unchecked")
     public Collection<String> listService(String namespaceId, String groupName, String selector) throws NacosException {
+        // 拿到namespace下的所有Service
         Collection<Service> services = ServiceManager.getInstance().getSingletons(namespaceId);
         if (services.isEmpty()) {
             return Collections.EMPTY_LIST;

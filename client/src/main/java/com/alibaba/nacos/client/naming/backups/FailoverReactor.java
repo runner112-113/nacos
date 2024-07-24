@@ -68,7 +68,9 @@ public class FailoverReactor implements Closeable {
     public FailoverReactor(ServiceInfoHolder serviceInfoHolder, String notifierEventScope) {
         this.serviceInfoHolder = serviceInfoHolder;
         this.notifierEventScope = notifierEventScope;
+        // SPI获取故障转移数据 FailoverDataSource
         Collection<FailoverDataSource> dataSources = NacosServiceLoader.load(FailoverDataSource.class);
+        // 有多个 但只取第一个
         for (FailoverDataSource dataSource : dataSources) {
             failoverDataSource = dataSource;
             NAMING_LOGGER.info("FailoverDataSource type is {}", dataSource.getClass());

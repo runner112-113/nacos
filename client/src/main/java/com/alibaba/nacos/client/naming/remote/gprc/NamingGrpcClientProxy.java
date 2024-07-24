@@ -392,6 +392,7 @@ public class NamingGrpcClientProxy extends AbstractNamingClientProxy {
         SubscribeServiceRequest request = new SubscribeServiceRequest(namespaceId, groupName, serviceName, clusters,
                 true);
         SubscribeServiceResponse response = requestToServer(request, SubscribeServiceResponse.class);
+        // 注册成功之后会回填SubscriberRedoData的registered为true
         redoService.subscriberRegistered(serviceName, groupName, clusters);
         return response.getServiceInfo();
     }

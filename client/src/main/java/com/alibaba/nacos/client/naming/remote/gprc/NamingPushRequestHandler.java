@@ -28,6 +28,8 @@ import com.alibaba.nacos.common.remote.client.ServerRequestHandler;
  * Naming push request handler.
  *
  * @author xiweng.yy
+ *
+ * 处理Nacos服务端NotifySubscriberRequest通知请求
  */
 public class NamingPushRequestHandler implements ServerRequestHandler {
     

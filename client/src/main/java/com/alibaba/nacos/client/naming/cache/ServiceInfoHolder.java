@@ -47,6 +47,7 @@ import static com.alibaba.nacos.client.utils.LogUtils.NAMING_LOGGER;
  * Naming client service information holder.
  *
  * @author xiweng.yy
+ * 客户端缓存
  */
 public class ServiceInfoHolder implements Closeable {
     
@@ -62,11 +63,13 @@ public class ServiceInfoHolder implements Closeable {
     
     public ServiceInfoHolder(String namespace, String notifierEventScope, NacosClientProperties properties) {
         cacheDir = CacheDirUtil.initCacheDir(namespace, properties);
+        // namingLoadCacheAtStart：判断是否在启动时加载本地文件缓存
         if (isLoadCacheAtStart(properties)) {
             this.serviceInfoMap = new ConcurrentHashMap<>(DiskCache.read(this.cacheDir));
         } else {
             this.serviceInfoMap = new ConcurrentHashMap<>(16);
         }
+        // 实例化故障转移Reactor
         this.failoverReactor = new FailoverReactor(this, notifierEventScope);
         this.pushEmptyProtection = isPushEmptyProtect(properties);
         this.notifierEventScope = notifierEventScope;
@@ -127,13 +130,16 @@ public class ServiceInfoHolder implements Closeable {
                     JacksonUtils.toJson(serviceInfo.getHosts()));
             return null;
         }
+        // 拿到旧的ServiceInfo
         ServiceInfo oldService = serviceInfoMap.get(serviceInfo.getKey());
+        // 服务端推送的serviceInfo 是否是空或有误的
         if (isEmptyOrErrorPush(serviceInfo)) {
             //empty or error push, just ignore
             NAMING_LOGGER.warn("process service info but found empty or error push, serviceKey: {}, " 
                     + "pushEmptyProtection: {}, hosts: {}", serviceKey, pushEmptyProtection, serviceInfo.getHosts());
             return oldService;
         }
+        // 添加新的serviceInfo 覆盖旧的
         serviceInfoMap.put(serviceInfo.getKey(), serviceInfo);
         boolean changed = isChangedServiceInfo(oldService, serviceInfo);
         if (StringUtils.isBlank(serviceInfo.getJsonFromServer())) {
@@ -144,10 +150,12 @@ public class ServiceInfoHolder implements Closeable {
             NAMING_LOGGER.info("current ips:({}) service: {} -> {}", serviceInfo.ipCount(), serviceInfo.getKey(),
                     JacksonUtils.toJson(serviceInfo.getHosts()));
             if (!failoverReactor.isFailoverSwitch(serviceKey)) {
+                // 发送InstancesChangeEvent事件 触发subscribe的EventListener
                 NotifyCenter.publishEvent(
                         new InstancesChangeEvent(notifierEventScope, serviceInfo.getName(), serviceInfo.getGroupName(),
                                 serviceInfo.getClusters(), serviceInfo.getHosts()));
             }
+            // 写入磁盘
             DiskCache.write(serviceInfo, cacheDir);
         }
         return serviceInfo;
