@@ -126,6 +126,8 @@ public interface Client {
      * Generate sync data.
      *
      * @return sync data
+     *
+     * 生成当前Client的所有publishers信息
      */
     ClientSyncData generateSyncData();
     

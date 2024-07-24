@@ -186,6 +186,7 @@ public class DistroClientDataProcessor extends SmartSubscriber implements Distro
                         new MetadataEvent.InstanceMetadataEvent(singleton, instancePublishInfo.getMetadataId(), false));
             }
         }
+        // 移除掉过期的
         for (Service each : client.getAllPublishedService()) {
             if (!syncedService.contains(each)) {
                 client.removeServiceInstance(each);
@@ -193,6 +194,7 @@ public class DistroClientDataProcessor extends SmartSubscriber implements Distro
                         new ClientOperationEvent.ClientDeregisterServiceEvent(each, client.getClientId()));
             }
         }
+        // 设置修订号
         client.setRevision(clientSyncData.getAttributes().<Integer>getClientAttribute(ClientConstants.REVISION, 0));
     }
     
@@ -215,9 +217,11 @@ public class DistroClientDataProcessor extends SmartSubscriber implements Distro
             syncedService.add(singleton);
             BatchInstancePublishInfo batchInstancePublishInfo = batchInstancePublishInfos.get(i);
             InstancePublishInfo publishInfo = client.getInstancePublishInfo(singleton);
+            // 不同就更新
             if (batchInstancePublishInfo != null && !batchInstancePublishInfo.equals(publishInfo)) {
                 client.addServiceInstance(singleton, batchInstancePublishInfo);
                 NotifyCenter.publishEvent(
+                        // 添加到publisherIndexes中
                         new ClientOperationEvent.ClientRegisterServiceEvent(singleton, client.getClientId()));
             }
         }
@@ -250,6 +254,7 @@ public class DistroClientDataProcessor extends SmartSubscriber implements Distro
         if (null == client) {
             return null;
         }
+        // 构建当前Client的所有发布者信息
         byte[] data = ApplicationUtils.getBean(Serializer.class).serialize(client.generateSyncData());
         return new DistroData(distroKey, data);
     }
@@ -259,6 +264,7 @@ public class DistroClientDataProcessor extends SmartSubscriber implements Distro
         List<ClientSyncData> datum = new LinkedList<>();
         for (String each : clientManager.allClientId()) {
             Client client = clientManager.getClient(each);
+            // 不是临时节点直接跳过
             if (null == client || !client.isEphemeral()) {
                 continue;
             }
@@ -281,6 +287,7 @@ public class DistroClientDataProcessor extends SmartSubscriber implements Distro
             }
             // 是本机负责的Client才进行处理
             if (clientManager.isResponsibleClient(client)) {
+                // 元数据clientId和revision
                 DistroClientVerifyInfo verifyData = new DistroClientVerifyInfo(client.getClientId(),
                         client.getRevision());
                 DistroKey distroKey = new DistroKey(client.getClientId(), TYPE);
