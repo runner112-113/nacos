@@ -32,6 +32,8 @@ import com.alibaba.nacos.naming.misc.UtilsAndCommons;
  * Thread to update ephemeral instance triggered by client beat for v2.x.
  *
  * @author nkorange
+ *
+ * 处理客户端心跳请求
  */
 public class ClientBeatProcessorV2 implements BeatProcessor {
     
@@ -64,6 +66,7 @@ public class ClientBeatProcessorV2 implements BeatProcessor {
             }
 
             instance.setLastHeartBeatTime(System.currentTimeMillis());
+            // 恢复健康
             if (!instance.isHealthy()) {
                 // 健康状态恢复
                 instance.setHealthy(true);

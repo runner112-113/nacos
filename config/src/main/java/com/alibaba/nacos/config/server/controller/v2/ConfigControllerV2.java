@@ -119,11 +119,12 @@ public class ConfigControllerV2 {
         // check required field
         configForm.validate();
         // encrypted
+        // dataId格式：cipher-AES-dataId
         Pair<String, String> pair = EncryptionHandler.encryptHandler(configForm.getDataId(), configForm.getContent());
         configForm.setContent(pair.getSecond());
         //fix issue #9783
         configForm.setNamespaceId(NamespaceUtil.processNamespaceParameter(configForm.getNamespaceId()));
-        // check param
+        // check param 多租户
         ParamUtils.checkTenantV2(configForm.getNamespaceId());
         ParamUtils.checkParam(configForm.getDataId(), configForm.getGroup(), "datumId", configForm.getContent());
         ParamUtils.checkParamV2(configForm.getTag());

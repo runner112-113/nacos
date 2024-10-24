@@ -139,8 +139,9 @@ public class CacheData {
     private final AtomicLong lastModifiedTs = new AtomicLong(0);
     
     /**
-     * notify change flag,for notify&sync concurrent control. 1.reset to false if starting to sync with server. 2.update
-     * to true if receive config change notification.
+     * notify change flag,for notify&sync concurrent control.
+     * 1.reset to false if starting to sync with server.
+     * 2.update to true if receive config change notification.
      */
     private final AtomicBoolean receiveNotifyChanged = new AtomicBoolean(false);
     
@@ -560,6 +561,7 @@ public class CacheData {
         this.listeners = new CopyOnWriteArrayList<>();
         this.isInitializing = true;
         if (initSnapshot) {
+            // 首先从Failover文件获取，没有则从Snapshot文件获取
             this.content = loadCacheContentFromDiskLocal(envName, dataId, group, tenant);
             this.encryptedDataKey = loadEncryptedDataKeyFromDiskLocal(envName, dataId, group, tenant);
             this.md5 = getMd5String(this.content);

@@ -52,7 +52,13 @@ public class UnhealthyInstanceChecker implements InstanceBeatChecker {
             changeHealthyStatus(client, service, instance);
         }
     }
-    
+
+    /**
+     * 默认超过15s没收到心跳则为不健康实例 {@link Constants.DEFAULT_HEART_BEAT_TIMEOUT}
+     * @param service
+     * @param instance
+     * @return
+     */
     private boolean isUnhealthy(Service service, HealthCheckInstancePublishInfo instance) {
         long beatTimeout = getTimeout(service, instance);
         return System.currentTimeMillis() - instance.getLastHeartBeatTime() > beatTimeout;

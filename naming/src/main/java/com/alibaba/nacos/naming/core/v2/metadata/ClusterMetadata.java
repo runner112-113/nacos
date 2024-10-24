@@ -52,7 +52,7 @@ public class ClusterMetadata implements Serializable {
     private boolean useInstancePortForCheck = true;
 
     /**
-     * ：用于用户自定义扩展的元数据内容，形式为 K-V 。
+     * 用于用户自定义扩展的元数据内容，形式为 K-V 。
      * 可以自定义扩展该集群的元数据信息，方便用户实现自己的自定义逻辑和标示该集群。
      */
     private Map<String, String> extendData = new ConcurrentHashMap<>(1);

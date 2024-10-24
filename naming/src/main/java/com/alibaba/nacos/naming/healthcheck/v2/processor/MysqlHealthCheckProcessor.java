@@ -149,7 +149,8 @@ public class MysqlHealthCheckProcessor implements HealthCheckProcessorV2 {
                 
                 resultSet = statement.executeQuery(config.getCmd());
                 int resultColumnIndex = 2;
-                
+
+                // 开启readonly的是slave
                 if (CHECK_MYSQL_MASTER_SQL.equals(config.getCmd())) {
                     resultSet.next();
                     if (MYSQL_SLAVE_READONLY.equals(resultSet.getString(resultColumnIndex))) {

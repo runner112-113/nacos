@@ -69,6 +69,7 @@ public class EphemeralClientOperationServiceImpl implements ClientOperationServi
         // 添加到Client的publishers集合中  Service ---> InstancePublishInfo
         client.addServiceInstance(singleton, instanceInfo);
         client.setLastUpdatedTime();
+        // 重新计算修订号
         client.recalculateRevision();
         // 添加到publisherIndexes中  Service --> Set<String> clientIds
         NotifyCenter.publishEvent(new ClientOperationEvent.ClientRegisterServiceEvent(singleton, clientId));

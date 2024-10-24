@@ -773,6 +773,7 @@ public class ClientWorker implements Closeable {
             executor.schedule(() -> {
                 while (!executor.isShutdown() && !executor.isTerminated()) {
                     try {
+                        // 最长等待5s执行一次
                         listenExecutebell.poll(5L, TimeUnit.SECONDS);
                         if (executor.isShutdown() || executor.isTerminated()) {
                             continue;
@@ -882,6 +883,7 @@ public class ClientWorker implements Closeable {
             if (!cacheData.isUseLocalConfigInfo() && file.exists()) {
                 String content = LocalConfigInfoProcessor.getFailover(envName, dataId, group, tenant);
                 final String md5 = MD5Utils.md5Hex(content, Constants.ENCODE);
+                // 在有Failover情况下，设置为使用本地的文件
                 cacheData.setUseLocalConfigInfo(true);
                 cacheData.setLocalConfigInfoVersion(file.lastModified());
                 cacheData.setContent(content);
@@ -1024,7 +1026,7 @@ public class ClientWorker implements Closeable {
                         ConfigBatchListenRequest configChangeListenRequest = buildConfigRequest(listenCaches);
                         configChangeListenRequest.setListen(true);
                         try {
-                            // 批量注册监听
+                            // 传客户端的MD5,去校验是否发生了变化
                             ConfigChangeBatchListenResponse listenResponse = (ConfigChangeBatchListenResponse) requestProxy(
                                     rpcClient, configChangeListenRequest);
                             if (listenResponse != null && listenResponse.isSuccess()) {
@@ -1034,6 +1036,7 @@ public class ClientWorker implements Closeable {
                                 List<ConfigChangeBatchListenResponse.ConfigContext> changedConfigs = listenResponse.getChangedConfigs();
                                 //handle changed keys,notify listener
                                 if (!CollectionUtils.isEmpty(changedConfigs)) {
+                                    // 表明有变化
                                     hasChangedKeys.set(true);
                                     for (ConfigChangeBatchListenResponse.ConfigContext changeConfig : changedConfigs) {
                                         String changeKey = GroupKey.getKeyTenant(changeConfig.getDataId(),

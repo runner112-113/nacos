@@ -39,6 +39,8 @@ import java.util.Optional;
  * <p>Current health check logic is same as v1.x. TODO refactor health check for v2.x.
  *
  * @author nacos
+ *
+ * 主动检查：支持HTTP、TCP、MYSQL
  */
 public class HealthCheckTaskV2 extends AbstractExecuteTask implements NacosHealthCheckTask {
     

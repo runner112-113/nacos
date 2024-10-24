@@ -41,8 +41,11 @@ public class InstanceBeatCheckTask implements Interceptable {
     private final HealthCheckInstancePublishInfo instancePublishInfo;
     
     static {
+        // 不健康检查 默认15s没收到心跳
         CHECKERS.add(new UnhealthyInstanceChecker());
+        // 过期检查 默认30s没收到心跳
         CHECKERS.add(new ExpiredInstanceChecker());
+        // SPI
         CHECKERS.addAll(NacosServiceLoader.load(InstanceBeatChecker.class));
     }
     

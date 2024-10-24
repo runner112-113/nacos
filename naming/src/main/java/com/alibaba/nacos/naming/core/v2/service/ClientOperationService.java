@@ -94,6 +94,7 @@ public interface ClientOperationService {
     default InstancePublishInfo getPublishInfo(Instance instance) {
         InstancePublishInfo result = new InstancePublishInfo(instance.getIp(), instance.getPort());
         Map<String, Object> extendDatum = result.getExtendDatum();
+        // 处理元数据
         if (null != instance.getMetadata() && !instance.getMetadata().isEmpty()) {
             extendDatum.putAll(instance.getMetadata());
         }

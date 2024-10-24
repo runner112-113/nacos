@@ -42,8 +42,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public class InstancesChangeNotifier extends Subscriber<InstancesChangeEvent> {
     
     private final String eventScope;
-    
-    private final Map<String, ConcurrentHashSet<EventListener>> listenerMap = new ConcurrentHashMap<>();
+
+    // 本地缓存的监听器
+    private final Map<String/*监听服务的唯一标识*/, ConcurrentHashSet<EventListener>> listenerMap = new ConcurrentHashMap<>();
     
     @JustForTest
     public InstancesChangeNotifier() {
@@ -119,10 +120,13 @@ public class InstancesChangeNotifier extends Subscriber<InstancesChangeEvent> {
             return;
         }
         for (final EventListener listener : eventListeners) {
+            // 转换为NamingEvent
             final com.alibaba.nacos.api.naming.listener.Event namingEvent = transferToNamingEvent(event);
+            // 异步
             if (listener instanceof AbstractEventListener && ((AbstractEventListener) listener).getExecutor() != null) {
                 ((AbstractEventListener) listener).getExecutor().execute(() -> listener.onEvent(namingEvent));
             } else {
+                // 同步
                 listener.onEvent(namingEvent);
             }
         }

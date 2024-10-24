@@ -64,6 +64,7 @@ public class ConfigChangeBatchListenRequestHandler
         String tag = configChangeListenRequest.getHeader(Constants.VIPSERVER_TAG);
         
         ConfigChangeBatchListenResponse configChangeBatchListenResponse = new ConfigChangeBatchListenResponse();
+        // 循环遍历，检查MD5是否变化
         for (ConfigBatchListenRequest.ConfigListenContext listenContext : configChangeListenRequest
                 .getConfigListenContexts()) {
             String groupKey = GroupKey2
@@ -76,13 +77,14 @@ public class ConfigChangeBatchListenRequestHandler
                 // groupKeyContext：groupKey ---> connectionId
                 // connectionIdContext：connectionId ---> <groupKey, md5>
                 configChangeListenContext.addListen(groupKey, md5, connectionId);
-                // 用 CacheItem 元素 md5 值与客户端值作对比，若不一致，会返回当前的 dataId 数据
+                // 用 CacheItem 元素 md5 值与客户端值作对比，若不一致，会返回当前的 dataId，group，tenant
                 boolean isUptoDate = ConfigCacheService.isUptodate(groupKey, md5, meta.getClientIp(), tag);
                 if (!isUptoDate) {
                     configChangeBatchListenResponse.addChangeConfig(listenContext.getDataId(), listenContext.getGroup(),
                             listenContext.getTenant());
                 }
             } else {
+                // 不再监听
                 // 移除 groupKeyContext、connectionIdContext 集合元素
                 configChangeListenContext.removeListen(groupKey, connectionId);
             }

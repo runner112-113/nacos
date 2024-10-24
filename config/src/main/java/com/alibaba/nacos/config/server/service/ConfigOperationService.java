@@ -85,7 +85,8 @@ public class ConfigOperationService {
             throw new NacosApiException(HttpStatus.FORBIDDEN.value(), ErrorCode.INVALID_DATA_ID,
                     "dataId:" + configForm.getDataId() + " is aggr");
         }
-        
+
+        // 构建ConfigInfo
         ConfigInfo configInfo = new ConfigInfo(configForm.getDataId(), configForm.getGroup(),
                 configForm.getNamespaceId(), configForm.getAppName(), configForm.getContent());
         //set old md5
