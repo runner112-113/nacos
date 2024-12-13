@@ -692,6 +692,7 @@ public class ClientWorker implements Closeable {
             /*
              * Register Config Change /Config ReSync Handler
              */
+            // 注册配置变化通知处理器（接受server端push请求）
             rpcClientInner.registerServerRequestHandler((request, connection) -> {
                 if (request instanceof ConfigChangeNotifyRequest) {
                     return handleConfigChangeNotifyRequest((ConfigChangeNotifyRequest) request,
