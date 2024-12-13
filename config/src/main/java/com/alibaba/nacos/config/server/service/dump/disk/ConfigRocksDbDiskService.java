@@ -157,7 +157,7 @@ public class ConfigRocksDbDiskService implements ConfigDiskService {
         
     }
     
-    /**
+    /** 
      * Deletes configuration files on disk.
      */
     public void removeConfigInfo(String dataId, String group, String tenant) {

@@ -45,7 +45,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 /**
- * local data source.
+ * local data source.  derby
  *
  * @author Nacos
  */

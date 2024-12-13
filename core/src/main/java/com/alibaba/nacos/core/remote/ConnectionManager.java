@@ -58,7 +58,7 @@ public class ConnectionManager {
     
     private static final Logger LOGGER = com.alibaba.nacos.plugin.control.Loggers.CONNECTION;
     
-    private Map<String, AtomicInteger> connectionForClientIp = new ConcurrentHashMap<>(16);
+    private Map<String/*clientIp*/, AtomicInteger/*连接数量*/> connectionForClientIp = new ConcurrentHashMap<>(16);
     
     Map<String, Connection> connections = new ConcurrentHashMap<>();
     

@@ -213,7 +213,9 @@ public abstract class GrpcClient extends RpcClient {
                 .executor(grpcExecutor).compressorRegistry(CompressorRegistry.getDefaultInstance())
                 .decompressorRegistry(DecompressorRegistry.getDefaultInstance())
                 .maxInboundMessageSize(clientConfig.maxInboundMessageSize())
+                // 这是客户端向服务端发送心跳的时间间隔。如果客户端在该时间内没有向服务端发送任何数据，它会主动发送一个空心跳帧。
                 .keepAliveTime(clientConfig.channelKeepAlive(), TimeUnit.MILLISECONDS)
+                // 这是客户端等待服务端回应的最大超时时间。如果客户端在超时时间内未收到服务端的心跳响应，连接将被认为是断开的
                 .keepAliveTimeout(clientConfig.channelKeepAliveTimeout(), TimeUnit.MILLISECONDS);
         return managedChannelBuilder.build();
     }
@@ -276,6 +278,7 @@ public abstract class GrpcClient extends RpcClient {
                                 setupRequestHandler.requestReply(request, null);
                                 return;
                             }
+                            // 处理响应
                             Response response = handleServerRequest(request);
                             if (response != null) {
                                 response.setRequestId(request.getRequestId());
@@ -394,6 +397,7 @@ public abstract class GrpcClient extends RpcClient {
             grpcConn.setGrpcFutureServiceStub(newChannelStubTemp);
             grpcConn.setChannel(managedChannel);
             //send a  setup request.
+            // 建立连接的请求
             ConnectionSetupRequest conSetupRequest = new ConnectionSetupRequest();
             conSetupRequest.setClientVersion(VersionUtils.getFullClientVersion());
             conSetupRequest.setLabels(super.getLabels());
