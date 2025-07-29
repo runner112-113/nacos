@@ -61,9 +61,11 @@ public class ConnectionBasedClientManager extends ClientConnectionEventListener 
         if (!RemoteConstants.LABEL_MODULE_NAMING.equals(connect.getMetaInfo().getLabel(RemoteConstants.LABEL_MODULE))) {
             return;
         }
+        //把Connection对象中的信息取出来，放到ClientAttributes对象中
         ClientAttributes attributes = new ClientAttributes();
         attributes.addClientAttribute(ClientConstants.CONNECTION_TYPE, connect.getMetaInfo().getConnectType());
         attributes.addClientAttribute(ClientConstants.CONNECTION_METADATA, connect.getMetaInfo());
+        //传入connectionId和连接信息
         clientConnected(connect.getMetaInfo().getConnectionId(), attributes);
     }
     
@@ -71,11 +73,13 @@ public class ConnectionBasedClientManager extends ClientConnectionEventListener 
     public boolean clientConnected(String clientId, ClientAttributes attributes) {
         String type = attributes.getClientAttribute(ClientConstants.CONNECTION_TYPE);
         ClientFactory clientFactory = ClientFactoryHolder.getInstance().findClientFactory(type);
+        //这里的clientId就是connectionId，根据connectionId创建出Client对象
         return clientConnected(clientFactory.newClient(clientId, attributes));
     }
     
     @Override
     public boolean clientConnected(final Client client) {
+        //最后将connectionId与Client对象进行绑定，放入到ConnectionBasedClientManager的clients这个Map中
         clients.computeIfAbsent(client.getClientId(), s -> {
             Loggers.SRV_LOG.info("Client connection {} connect", client.getClientId());
             return (ConnectionBasedClient) client;

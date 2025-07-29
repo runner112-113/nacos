@@ -72,6 +72,7 @@ public abstract class BaseGrpcServer extends BaseRpcServer {
     @Override
     public void startServer() throws Exception {
         final MutableHandlerRegistry handlerRegistry = new MutableHandlerRegistry();
+        // 添加服务以及定义请求拦截器GrpcConnectionInterceptor
         addServices(handlerRegistry, getSeverInterceptors().toArray(new ServerInterceptor[0]));
         NettyServerBuilder builder = NettyServerBuilder.forPort(getServicePort()).executor(getRpcExecutor());
         
@@ -85,13 +86,15 @@ public abstract class BaseGrpcServer extends BaseRpcServer {
         for (ServerTransportFilter each : getServerTransportFilters()) {
             builder.addTransportFilter(each);
         }
+        // 创建一个gRPC框架的Server对象，使用了建造者模式
         server = builder.maxInboundMessageSize(getMaxInboundMessageSize()).fallbackHandlerRegistry(handlerRegistry)
                 .compressorRegistry(CompressorRegistry.getDefaultInstance())
                 .decompressorRegistry(DecompressorRegistry.getDefaultInstance())
                 .keepAliveTime(getKeepAliveTime(), TimeUnit.MILLISECONDS)
                 .keepAliveTimeout(getKeepAliveTimeout(), TimeUnit.MILLISECONDS)
                 .permitKeepAliveTime(getPermitKeepAliveTime(), TimeUnit.MILLISECONDS).build();
-        
+
+        // 启动gRPC框架的Server
         server.start();
     }
     
@@ -157,16 +160,21 @@ public abstract class BaseGrpcServer extends BaseRpcServer {
                                 GrpcServerConstants.REQUEST_METHOD_NAME))
                 .setRequestMarshaller(ProtoUtils.marshaller(Payload.getDefaultInstance()))
                 .setResponseMarshaller(ProtoUtils.marshaller(Payload.getDefaultInstance())).build();
-        
+
+        //对gRPC客户端请求的服务进行映射处理
         final ServerCallHandler<Payload, Payload> payloadHandler = ServerCalls.asyncUnaryCall(
                 (request, responseObserver) -> grpcCommonRequestAcceptor.request(request, responseObserver));
-        
+
+        //构建ServerServiceDefinition服务
         final ServerServiceDefinition serviceDefOfUnaryPayload = ServerServiceDefinition
                 .builder(GrpcServerConstants.REQUEST_SERVICE_NAME).addMethod(unaryPayloadMethod, payloadHandler)
                 .build();
+        //添加服务到gRPC的请求流程中
         handlerRegistry.addService(ServerInterceptors.intercept(serviceDefOfUnaryPayload, serverInterceptor));
         
         // bi stream register.
+        //处理客户端连接对象的关联
+        //也就是调用GrpcBiStreamRequestAcceptor.requestBiStream()方法对ConnectionId与Client对象进行绑定
         final ServerCallHandler<Payload, Payload> biStreamHandler = ServerCalls.asyncBidiStreamingCall(
                 (responseObserver) -> grpcBiStreamRequestAcceptor.requestBiStream(responseObserver));
         

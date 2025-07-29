@@ -44,7 +44,8 @@ public abstract class BaseRpcServer {
     public void start() throws Exception {
         String serverName = getClass().getSimpleName();
         Loggers.REMOTE.info("Nacos {} Rpc server starting at port {}", serverName, getServicePort());
-        
+
+        //调用BaseGrpcServer.startServer()方法启动gRPC服务端
         startServer();
         
         if (RpcServerSslContextRefresherHolder.getInstance() != null) {

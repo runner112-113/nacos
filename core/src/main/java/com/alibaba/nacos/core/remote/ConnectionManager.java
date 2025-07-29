@@ -59,7 +59,8 @@ public class ConnectionManager {
     private static final Logger LOGGER = com.alibaba.nacos.plugin.control.Loggers.CONNECTION;
     
     private Map<String/*clientIp*/, AtomicInteger/*连接数量*/> connectionForClientIp = new ConcurrentHashMap<>(16);
-    
+
+    //存储connectionId对应的Connection对象
     Map<String, Connection> connections = new ConcurrentHashMap<>();
     
     private RuntimeConnectionEjector runtimeConnectionEjector;
@@ -112,9 +113,11 @@ public class ConnectionManager {
             if (traced(clientIp)) {
                 connection.setTraced(true);
             }
+            //将connectionId与Connection连接对象进行绑定
             connections.put(connectionId, connection);
             connectionForClientIp.computeIfAbsent(clientIp, k -> new AtomicInteger(0)).getAndIncrement();
-            
+
+            //把Connection连接对象包装成Client对象
             clientConnectionEventListenerRegistry.notifyClientConnected(connection);
             
             LOGGER.info("new connection registered successfully, connectionId = {},connection={} ", connectionId,

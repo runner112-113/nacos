@@ -42,6 +42,7 @@ public class ClientConnectionEventListenerRegistry {
         
         for (ClientConnectionEventListener clientConnectionEventListener : clientConnectionEventListeners) {
             try {
+                //调用ConnectionBasedClientManager.clientConnected()方法
                 clientConnectionEventListener.clientConnected(connection);
             } catch (Throwable throwable) {
                 Loggers.REMOTE
