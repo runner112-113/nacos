@@ -52,37 +52,38 @@ import java.util.concurrent.TimeUnit;
  * @version $Id: BaseGrpcServer.java, v 0.1 2020年07月13日 3:42 PM liuzunfei Exp $
  */
 public abstract class BaseGrpcServer extends BaseRpcServer {
-    
+
     private Server server;
-    
+
     @Autowired
     private GrpcRequestAcceptor grpcCommonRequestAcceptor;
-    
+
     @Autowired
     private GrpcBiStreamRequestAcceptor grpcBiStreamRequestAcceptor;
-    
+
     @Autowired
     private ConnectionManager connectionManager;
-    
+
     @Override
     public ConnectionType getConnectionType() {
         return ConnectionType.GRPC;
     }
-    
+
     @Override
     public void startServer() throws Exception {
         final MutableHandlerRegistry handlerRegistry = new MutableHandlerRegistry();
         // 添加服务以及定义请求拦截器GrpcConnectionInterceptor
         addServices(handlerRegistry, getSeverInterceptors().toArray(new ServerInterceptor[0]));
         NettyServerBuilder builder = NettyServerBuilder.forPort(getServicePort()).executor(getRpcExecutor());
-        
+
         Optional<InternalProtocolNegotiator.ProtocolNegotiator> negotiator = newProtocolNegotiator();
         if (negotiator.isPresent()) {
             InternalProtocolNegotiator.ProtocolNegotiator actual = negotiator.get();
             Loggers.REMOTE.info("Add protocol negotiator {}", actual.getClass().getCanonicalName());
             builder.protocolNegotiator(actual);
         }
-        
+
+        // ServerTransportFilter:在每个传输通道（Transport）创建、关闭时进行拦截，可以理解为是 连接级别（Connection-level） 的钩子（Hook）
         for (ServerTransportFilter each : getServerTransportFilters()) {
             builder.addTransportFilter(each);
         }
@@ -97,12 +98,12 @@ public abstract class BaseGrpcServer extends BaseRpcServer {
         // 启动gRPC框架的Server
         server.start();
     }
-    
+
     @Override
     public void reloadProtocolContext() {
         reloadProtocolNegotiator();
     }
-    
+
     /**
      * Build new one protocol negotiator.
      *
@@ -113,25 +114,25 @@ public abstract class BaseGrpcServer extends BaseRpcServer {
     protected Optional<InternalProtocolNegotiator.ProtocolNegotiator> newProtocolNegotiator() {
         return Optional.empty();
     }
-    
+
     /**
      * reload protocol negotiator If necessary.
      */
     public void reloadProtocolNegotiator() {
     }
-    
+
     protected long getPermitKeepAliveTime() {
         return GrpcServerConstants.GrpcConfig.DEFAULT_GRPC_PERMIT_KEEP_ALIVE_TIME;
     }
-    
+
     protected long getKeepAliveTime() {
         return GrpcServerConstants.GrpcConfig.DEFAULT_GRPC_KEEP_ALIVE_TIME;
     }
-    
+
     protected long getKeepAliveTimeout() {
         return GrpcServerConstants.GrpcConfig.DEFAULT_GRPC_KEEP_ALIVE_TIMEOUT;
     }
-    
+
     protected int getMaxInboundMessageSize() {
         Integer property = EnvUtil
                 .getProperty(GrpcServerConstants.GrpcConfig.MAX_INBOUND_MSG_SIZE_PROPERTY, Integer.class);
@@ -140,19 +141,19 @@ public abstract class BaseGrpcServer extends BaseRpcServer {
         }
         return GrpcServerConstants.GrpcConfig.DEFAULT_GRPC_MAX_INBOUND_MSG_SIZE;
     }
-    
+
     protected List<ServerInterceptor> getSeverInterceptors() {
         List<ServerInterceptor> result = new LinkedList<>();
         result.add(new GrpcConnectionInterceptor());
         return result;
     }
-    
+
     protected List<ServerTransportFilter> getServerTransportFilters() {
         return Collections.singletonList(new AddressTransportFilter(connectionManager));
     }
-    
+
     private void addServices(MutableHandlerRegistry handlerRegistry, ServerInterceptor... serverInterceptor) {
-        
+
         // unary common call register.
         final MethodDescriptor<Payload, Payload> unaryPayloadMethod = MethodDescriptor.<Payload, Payload>newBuilder()
                 .setType(MethodDescriptor.MethodType.UNARY).setFullMethodName(MethodDescriptor
@@ -171,39 +172,39 @@ public abstract class BaseGrpcServer extends BaseRpcServer {
                 .build();
         //添加服务到gRPC的请求流程中
         handlerRegistry.addService(ServerInterceptors.intercept(serviceDefOfUnaryPayload, serverInterceptor));
-        
+
         // bi stream register.
         //处理客户端连接对象的关联
         //也就是调用GrpcBiStreamRequestAcceptor.requestBiStream()方法对ConnectionId与Client对象进行绑定
         final ServerCallHandler<Payload, Payload> biStreamHandler = ServerCalls.asyncBidiStreamingCall(
                 (responseObserver) -> grpcBiStreamRequestAcceptor.requestBiStream(responseObserver));
-        
+
         final MethodDescriptor<Payload, Payload> biStreamMethod = MethodDescriptor.<Payload, Payload>newBuilder()
                 .setType(MethodDescriptor.MethodType.BIDI_STREAMING).setFullMethodName(MethodDescriptor
                         .generateFullMethodName(GrpcServerConstants.REQUEST_BI_STREAM_SERVICE_NAME,
                                 GrpcServerConstants.REQUEST_BI_STREAM_METHOD_NAME))
                 .setRequestMarshaller(ProtoUtils.marshaller(Payload.newBuilder().build()))
                 .setResponseMarshaller(ProtoUtils.marshaller(Payload.getDefaultInstance())).build();
-        
+
         final ServerServiceDefinition serviceDefOfBiStream = ServerServiceDefinition
                 .builder(GrpcServerConstants.REQUEST_BI_STREAM_SERVICE_NAME).addMethod(biStreamMethod, biStreamHandler)
                 .build();
         handlerRegistry.addService(ServerInterceptors.intercept(serviceDefOfBiStream, serverInterceptor));
-        
+
     }
-    
+
     @Override
     public void shutdownServer() {
         if (server != null) {
             server.shutdownNow();
         }
     }
-    
+
     /**
      * get rpc executor.
      *
      * @return executor.
      */
     public abstract ThreadPoolExecutor getRpcExecutor();
-    
+
 }

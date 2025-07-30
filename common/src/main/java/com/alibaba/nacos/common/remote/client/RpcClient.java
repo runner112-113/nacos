@@ -280,6 +280,7 @@ public abstract class RpcClient implements Closeable {
                     if (reconnectContext == null) {
                         // check alive time.
                         //检查存活时间，默认存活时间为5s，超过5s就需要做健康检查
+                        // 健康检查
                         if (System.currentTimeMillis() - lastActiveTimeStamp >= rpcClientConfig.connectionKeepAlive()) {
                             //调用RpcClient.healthCheck()方法，发起健康检查请求
                             boolean isHealthy = healthCheck();

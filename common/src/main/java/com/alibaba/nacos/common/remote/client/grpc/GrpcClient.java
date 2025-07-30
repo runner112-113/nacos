@@ -367,19 +367,24 @@ public abstract class GrpcClient extends RpcClient {
             }
             //获取端口号：gRPC服务需要额外占用一个端口的，这个端口是在Nacos 8848的基础上，+ 偏移量1000，所以是9848
             int port = serverInfo.getServerPort() + rpcPortOffset();
+            // 创建ManagedChannel
             ManagedChannel managedChannel = createNewManagedChannel(serverInfo.getServerIp(), port);
+            // 根据channel来创建 stub
             RequestGrpc.RequestFutureStub newChannelStubTemp = createNewChannelStub(managedChannel);
 
             //检查一下服务端，没问题才会发起RPC连接请求
             Response response = serverCheck(serverInfo.getServerIp(), port, newChannelStubTemp);
             if (!(response instanceof ServerCheckResponse)) {
+                // 关闭掉channel
                 shuntDownChannel(managedChannel);
                 return null;
             }
             // submit ability table as soon as possible
             // ability table will be null if server doesn't support ability table
             ServerCheckResponse serverCheckResponse = (ServerCheckResponse) response;
+            // 拿到connectionId
             connectionId = serverCheckResponse.getConnectionId();
+
 
             BiRequestStreamGrpc.BiRequestStreamStub biRequestStreamStub = BiRequestStreamGrpc
                     .newStub(newChannelStubTemp.getChannel());
